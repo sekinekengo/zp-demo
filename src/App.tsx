@@ -5,6 +5,7 @@ import Home from "./pages/home/Home";
 import { createTheme, ThemeProvider } from "@mui/material";
 import ReactDataGridAdvancedDemo from "./demos/kyotsuDataGrid/ReactDataGridDemo";
 import ProjectManagementParent from "./demos/kyotsuDialog/ProjectManagementParent";
+import ShozokuCodeSentakuParent from "./demos/shozokuCodeSentaku/shozokuCodeSentakuParent";
 
 // 高さの基準となるピクセル数（ここを自由に調整可能）
 const SMALL_COMPONENT_HEIGHT = 36; // 高さ
@@ -90,6 +91,10 @@ function App() {
         <Route
           path="/project-management"
           element={<ProjectManagementParent />}
+        />
+        <Route
+          path="/shozoku-code-sentaku"
+          element={<ShozokuCodeSentakuParent />}
         />
       </Routes>
     </ThemeProvider>
