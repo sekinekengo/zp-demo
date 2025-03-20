@@ -96,13 +96,13 @@ const ProjectTeamBuilder: React.FC<DialogChildProps<ProjectData, ProjectData>> &
                 </List>
                 {team.teamMembers.length < 5 && (
                     <Box>
-                        <Button variant="contained" onClick={() => openMemberDialog('営業')} sx={{ mr: 1 }}>
+                        <Button variant="outlined" onClick={() => openMemberDialog('営業')} sx={{ mr: 1 }}>
                             営業部門から追加
                         </Button>
-                        <Button variant="contained" onClick={() => openMemberDialog('開発')} sx={{ mr: 1 }}>
+                        <Button variant="outlined" onClick={() => openMemberDialog('開発')} sx={{ mr: 1 }}>
                             開発部門から追加
                         </Button>
-                        <Button variant="contained" onClick={() => openMemberDialog('設計')}>
+                        <Button variant="outlined" onClick={() => openMemberDialog('設計')}>
                             設計部門から追加
                         </Button>
                     </Box>
