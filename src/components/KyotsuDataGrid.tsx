@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect, useEffect } from "react";
+import React, { useRef, useState, useLayoutEffect, useEffect, useCallback } from "react";
 import { DataGrid, Column, SortColumn } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { createPortal } from "react-dom";
@@ -159,6 +159,20 @@ export interface KyotsuDataGridProps<R extends object> {
   showRowNumber?: boolean;
   /** 内部でソートを実行するかどうか（falseの場合は外部ソートが必要） */
   useInternalSort?: boolean;
+  /** 行の選択を有効にするかどうか */
+  rowSelectable?: boolean;
+  /** 初期選択行（初期表示時に選択状態にする行） */
+  initialSelectedRow?: R | null;
+  /** 選択された行が変更された時に呼び出されるコールバック関数 */
+  onRowSelected?: (row: R | null) => void;
+  /** 現在選択されている行を取得する関数 */
+  selectedRowRef?: React.MutableRefObject<R | null>;
+  /** ソート時に選択行をクリアするかどうか */
+  clearSelectionOnSort?: boolean;
+  /** 行番号列のレンダラー関数（カスタマイズしたい場合） */
+  rowNumberCellRenderer?: (props: { rowIdx: number, row: R }) => React.ReactNode;
+  /** 行クリック時のコールバック */
+  onRowClick?: (args: { row: R }) => void;
   /** その他のDataGridプロパティ */
   [key: string]: unknown;
 }
@@ -192,6 +206,13 @@ function KyotsuDataGrid<R extends object>({
   },
   showRowNumber = false,
   useInternalSort = false,
+  rowSelectable = false,
+  initialSelectedRow = null,
+  onRowSelected,
+  selectedRowRef,
+  rowNumberCellRenderer,
+  onRowClick,
+  clearSelectionOnSort = true,
   ...rest
 }: KyotsuDataGridProps<R>) {
   // コンテキストメニューの状態管理
@@ -205,19 +226,80 @@ function KyotsuDataGrid<R extends object>({
   } | null>(null);
   const initialRenderRef = useRef(true);
 
+  // 内部で選択行を管理
+  const [internalSelectedRow, setInternalSelectedRow] = useState<R | null>(initialSelectedRow);
+
+  // 選択行が変更されたらrefとコールバックを更新
+  useEffect(() => {
+    // 選択行の参照を更新
+    if (selectedRowRef) {
+      selectedRowRef.current = internalSelectedRow;
+    }
+
+    // 選択行変更のコールバックを呼び出し
+    if (onRowSelected) {
+      onRowSelected(internalSelectedRow);
+    }
+  }, [internalSelectedRow, onRowSelected, selectedRowRef]);
+
+  // 選択行のキー取得
+  const selectedRowKey = internalSelectedRow ? rowKeyGetter(internalSelectedRow) : null;
+
+  // 行選択ハンドラー
+  const handleRowSelect = useCallback((row: R) => {
+    // 同じ行がクリックされた場合は選択解除
+    if (internalSelectedRow && rowKeyGetter(row) === selectedRowKey) {
+      setInternalSelectedRow(null);
+    } else {
+      setInternalSelectedRow(row);
+    }
+  }, [internalSelectedRow, selectedRowKey, rowKeyGetter]);
+
   // 各列にデフォルト設定を適用
   const processedColumns = React.useMemo(() => {
     // 行番号表示が有効な場合、行番号列を追加
     const finalColumns = [
-      ...columns.map((column) => ({
-        ...column,
-        width: column.width || "auto",
-        minWidth: column.minWidth || defaultColumnOptions.minWidth,
-        resizable:
-          column.resizable !== undefined
-            ? column.resizable
-            : defaultColumnOptions.resizable,
-      })),
+      ...columns.map((column) => {
+        const baseColumn = {
+          ...column,
+          width: column.width || "auto",
+          minWidth: column.minWidth || defaultColumnOptions.minWidth,
+          resizable:
+            column.resizable !== undefined
+              ? column.resizable
+              : defaultColumnOptions.resizable,
+        };
+
+        // 行選択機能が有効で、自前のrenderCellが定義されていない場合は自動で選択スタイルを適用
+        if (rowSelectable && !column.renderCell) {
+          return {
+            ...baseColumn,
+            renderCell: ({ row, column }: { row: R; column: Column<R> }) => {
+              const value = row[column.key as keyof R];
+              const isSelected = rowKeyGetter(row) === selectedRowKey;
+
+              return (
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    padding: '0 8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    backgroundColor: isSelected ? '#e3f2fd' : 'transparent',
+                  }}
+                  onClick={() => handleRowSelect(row)}
+                >
+                  {String(value)}
+                </div>
+              );
+            }
+          };
+        }
+
+        return baseColumn;
+      }),
     ];
 
     // 行番号列を先頭に追加
@@ -231,26 +313,44 @@ function KyotsuDataGrid<R extends object>({
         resizable: false,
         sortable: false,
         draggable: false,
+        renderCell: ({ rowIdx, row }: { rowIdx: number; row: R }) => {
+          if (rowNumberCellRenderer) {
+            return rowNumberCellRenderer({ rowIdx, row });
+          }
 
-        renderCell: ({ rowIdx }) => (
-          <div
-            style={{
-              textAlign: "center",
-              backgroundColor: "var(--rdg-header-background-color)",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {rowIdx + 1}
-          </div>
-        ),
+          const isSelected = rowSelectable && internalSelectedRow && rowKeyGetter(row) === selectedRowKey;
+
+          return (
+            <div
+              style={{
+                textAlign: "center",
+                backgroundColor: isSelected ? '#e3f2fd' : "var(--rdg-header-background-color)",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: rowSelectable ? "pointer" : "default",
+              }}
+              onClick={() => rowSelectable && handleRowSelect(row)}
+            >
+              {rowIdx + 1}
+            </div>
+          );
+        },
       });
     }
 
     return finalColumns;
-  }, [columns, defaultColumnOptions, showRowNumber]);
+  }, [
+    columns,
+    defaultColumnOptions,
+    showRowNumber,
+    rowSelectable,
+    selectedRowKey,
+    handleRowSelect,
+    rowNumberCellRenderer,
+    internalSelectedRow
+  ]);
 
   // コンテキストメニューの外側をクリックしたときに閉じる
   useEffect(() => {
@@ -404,6 +504,22 @@ function KyotsuDataGrid<R extends object>({
   // ペースト機能が有効かどうか
   const isPasteEnabled = contextMenuOptions.pasteRow && copiedRow !== null;
 
+  // ソート変更時のハンドラをラップしてソート時に選択行をクリアする機能を追加
+  const handleSortColumnsChange = useCallback(
+    (newSortColumns: SortColumn[]) => {
+      // 元のソート変更ハンドラを呼び出す
+      if (onSortColumnsChange) {
+        onSortColumnsChange(newSortColumns);
+      }
+
+      // clearSelectionOnSortが有効な場合、選択をクリア
+      if (clearSelectionOnSort && rowSelectable && internalSelectedRow) {
+        setInternalSelectedRow(null);
+      }
+    },
+    [onSortColumnsChange, clearSelectionOnSort, rowSelectable, internalSelectedRow]
+  );
+
   // 内部的にソートされた行データを生成
   const sortedRows = React.useMemo((): readonly R[] => {
     if (!useInternalSort || !sortColumns || sortColumns.length === 0)
@@ -460,37 +576,222 @@ function KyotsuDataGrid<R extends object>({
   // 表示するデータ（内部ソートを使う場合はsortedRows、そうでなければrows）
   const displayRows = useInternalSort ? sortedRows : rows;
 
+  // 行クリック時のハンドラ
+  const handleRowClick = useCallback(
+    (args: { row: R }) => {
+      if (rowSelectable) {
+        handleRowSelect(args.row);
+      }
+      // 外部から渡されたonRowClickがあれば実行
+      if (onRowClick) {
+        onRowClick(args);
+      }
+    },
+    [rowSelectable, handleRowSelect, onRowClick]
+  );
+
+  // DataGridの全てのプロパティを統合
+  const dataGridProps = {
+    ...rest,
+    columns: processedColumns,
+    rows: displayRows,
+    onRowsChange,
+    rowKeyGetter,
+    sortColumns,
+    onSortColumnsChange: clearSelectionOnSort ? handleSortColumnsChange : onSortColumnsChange,
+    onColumnsReorder,
+    style: {
+      blockSize: '100%',
+      minHeight: '200px',
+      flex: 1,
+      '--rdg-header-background-color': '#f2f2bb',
+    } as React.CSSProperties,
+    onCellContextMenu: isContextMenuEnabled
+      ? ({ row }: { row: R }, event: React.MouseEvent) => {
+        event.preventDefault();
+        const rowIdx = displayRows.indexOf(row);
+        setContextMenu({
+          rowIdx,
+          top: event.pageY + 5,
+          left: event.pageX + 5,
+        });
+      }
+      : undefined,
+    className: rowSelectable ? 'row-selectable-grid' : '',
+  };
+
+  // 行選択機能が有効な場合はonRow（もしくはDataGridが対応する行クリックハンドラ）を追加
+  if (rowSelectable || onRowClick) {
+    // DataGridのprototypeが存在しないので、型キャストでエラーを回避
+    const dataGridPropsWithRowHandlers = dataGridProps as typeof dataGridProps & {
+      onRow?: (row: R) => { onClick: () => void };
+      onRowClick?: typeof handleRowClick;
+    };
+
+    // react-data-gridのバージョンによって異なるプロパティを使用
+    const hasOnRow = 'onRow' in DataGrid;
+    const hasOnRowClick = 'onRowClick' in DataGrid;
+
+    if (hasOnRow) {
+      dataGridPropsWithRowHandlers.onRow = (row: R) => ({
+        onClick: () => handleRowClick({ row }),
+      });
+    } else if (hasOnRowClick) {
+      dataGridPropsWithRowHandlers.onRowClick = handleRowClick;
+    }
+
+    return (
+      <>
+        <DataGrid {...dataGridPropsWithRowHandlers} />
+
+        {contextMenu !== null &&
+          isContextMenuEnabled &&
+          createPortal(
+            <ul
+              ref={menuRef}
+              style={{
+                ...contextMenuStyle,
+                top: menuPosition?.top ?? 0,
+                left: menuPosition?.left ?? 0,
+                visibility: menuPosition ? "visible" : "hidden",
+              }}
+              className="context-menu"
+            >
+              {contextMenuOptions.copyRow && (
+                <li
+                  style={
+                    hoveredItem === "copy" ? menuItemHoverStyle : menuItemStyle
+                  }
+                  onMouseEnter={() => setHoveredItem("copy")}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  onClick={handleCopyRow}
+                >
+                  行をコピー
+                </li>
+              )}
+              {contextMenuOptions.pasteRow && (
+                <li
+                  style={
+                    copiedRow === null
+                      ? menuItemDisabledStyle
+                      : hoveredItem === "paste"
+                        ? menuItemHoverStyle
+                        : menuItemStyle
+                  }
+                  onMouseEnter={() => isPasteEnabled && setHoveredItem("paste")}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  onClick={isPasteEnabled ? handlePasteRow : undefined}
+                >
+                  行をペースト
+                </li>
+              )}
+              {contextMenuOptions.deleteRow && (
+                <li
+                  style={
+                    hoveredItem === "delete" ? menuItemHoverStyle : menuItemStyle
+                  }
+                  onMouseEnter={() => setHoveredItem("delete")}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  onClick={handleDeleteRow}
+                >
+                  行を削除
+                </li>
+              )}
+              {contextMenuOptions.addRowBelow && createEmptyRow && (
+                <li
+                  style={
+                    hoveredItem === "addBelow"
+                      ? menuItemHoverStyle
+                      : menuItemStyle
+                  }
+                  onMouseEnter={() => setHoveredItem("addBelow")}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  onClick={handleAddRowBelow}
+                >
+                  下に行を挿入
+                </li>
+              )}
+              {contextMenuOptions.addRowToBottom && createEmptyRow && (
+                <li
+                  style={
+                    hoveredItem === "addBottom"
+                      ? menuItemHoverStyle
+                      : menuItemStyle
+                  }
+                  onMouseEnter={() => setHoveredItem("addBottom")}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  onClick={handleAddRowToBottom}
+                >
+                  最下部に行を追加
+                </li>
+              )}
+            </ul>,
+            document.body
+          )}
+
+        <style>{`
+          /* 行番号列のセルのスタイル（renderCellの親要素） */
+          .rdg-cell {
+            padding: 0 !important;
+          }
+          
+          /* 行番号列のセルを特定する別のセレクタ */
+          .rdg-row > div:first-child {
+            padding: 0 !important;
+          }
+          
+          /* 行番号列のキー名を使用した特定のセレクタ */
+          [aria-selected="false"][role="row"] [aria-colindex="1"][role="gridcell"],
+          [aria-selected="true"][role="row"] [aria-colindex="1"][role="gridcell"],
+          [role="row"] > [data-column-key="__row_number__"] {
+            padding: 0 !important;
+          }
+          
+          /* 選択された行のスタイル */
+          .rdg-row[aria-selected="true"] {
+            background-color: transparent !important;
+          }
+          
+          /* コンテキストメニューのスタイル */
+          .context-menu li:hover {
+            background-color: #f0f0f0;
+          }
+
+          /* テキストエディタのスタイル */
+          .rdg-text-editor {
+            appearance: none;
+            box-sizing: border-box;
+            inline-size: 100%;
+            block-size: 100%;
+            padding-block: 0;
+            padding-inline: 6px;
+            border: 2px solid #ccc;
+            vertical-align: top;
+            color: var(--rdg-color);
+            background-color: var(--rdg-background-color);
+            font-family: inherit;
+            font-size: var(--rdg-font-size);
+          }
+          
+          .rdg-text-editor:focus {
+            border-color: var(--rdg-selection-color);
+            outline: none;
+          }
+          
+          /* セレクトボックスのスタイル */
+          select.rdg-text-editor {
+            padding-inline-end: 0;
+            appearance: auto;
+          }
+        `}</style>
+      </>
+    );
+  }
+
+  // 行選択が不要な場合の通常表示
   return (
     <>
-      <DataGrid
-        columns={processedColumns}
-        rows={displayRows}
-        onRowsChange={onRowsChange}
-        rowKeyGetter={rowKeyGetter}
-        sortColumns={sortColumns}
-        onSortColumnsChange={onSortColumnsChange}
-        onColumnsReorder={onColumnsReorder}
-        style={{
-          blockSize: '100%',
-          minHeight: '200px',
-          flex: 1,
-          '--rdg-header-background-color': '#f2f2bb'
-        } as React.CSSProperties}
-        onCellContextMenu={
-          isContextMenuEnabled
-            ? ({ row }, event) => {
-              event.preventDefault();
-              const rowIdx = displayRows.indexOf(row);
-              setContextMenu({
-                rowIdx,
-                top: event.pageY + 5,
-                left: event.pageX + 5,
-              });
-            }
-            : undefined
-        }
-        {...rest}
-      />
+      <DataGrid {...dataGridProps} />
 
       {contextMenu !== null &&
         isContextMenuEnabled &&
@@ -579,7 +880,7 @@ function KyotsuDataGrid<R extends object>({
 
       <style>{`
         /* 行番号列のセルのスタイル（renderCellの親要素） */
-        .rdg-cell[aria-colindex="1"] {
+        .rdg-cell {
           padding: 0 !important;
         }
         
@@ -593,6 +894,11 @@ function KyotsuDataGrid<R extends object>({
         [aria-selected="true"][role="row"] [aria-colindex="1"][role="gridcell"],
         [role="row"] > [data-column-key="__row_number__"] {
           padding: 0 !important;
+        }
+        
+        /* 選択された行のスタイル */
+        .rdg-row[aria-selected="true"] {
+          background-color: transparent !important;
         }
         
         /* コンテキストメニューのスタイル */

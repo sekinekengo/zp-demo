@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import KyotsuDataGrid from '../../components/KyotsuDataGrid';
 import { DialogChildProps, DialogSize } from '../../components/KyotsuDialog';
@@ -29,13 +29,12 @@ const generateDummyData = (): ShozokuData[] => {
 const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, ShozokuData>> & {
     dialogSize?: DialogSize;
     dialogTitle?: string;
-} = ({ onClose }) => {
+} = ({ onClose, initialData }) => {
     const [rows] = useState<ShozokuData[]>(generateDummyData());
-    const [selectedRow, setSelectedRow] = useState<ShozokuData | null>(null);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
 
-    // 選択された行のコード
-    const selectedCode = selectedRow?.code || '';
+    // 選択された行への参照を保持するためのref
+    const selectedRowRef = useRef<ShozokuData | null>(null);
 
     // カラム定義
     const columns = useMemo<Column<ShozokuData>[]>(() => [
@@ -45,22 +44,6 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
             width: 120,
             sortable: true,
             renderEditCell: textEditor,
-            renderCell: ({ row }) => (
-                <div
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        padding: '0 8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        backgroundColor: row.code === selectedCode ? '#e3f2fd' : 'transparent'
-                    }}
-                    onClick={() => setSelectedRow(row)}
-                >
-                    {row.code}
-                </div>
-            )
         },
         {
             key: 'name',
@@ -68,29 +51,21 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
             width: 200,
             sortable: true,
             renderEditCell: textEditor,
-            renderCell: ({ row }) => (
-                <div
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        padding: '0 8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        backgroundColor: row.code === selectedCode ? '#e3f2fd' : 'transparent'
-                    }}
-                    onClick={() => setSelectedRow(row)}
-                >
-                    {row.name}
-                </div>
-            )
         }
-    ], [selectedCode]);
+    ], []);
+
+    // 初期選択行を設定（initialDataに基づく）
+    const initialSelectedRow = useMemo(() => {
+        if (initialData?.selectedCode) {
+            return rows.find(row => row.code === initialData.selectedCode) || null;
+        }
+        return null;
+    }, [rows, initialData]);
 
     // 選択ボタンクリック時のハンドラ
     const handleSelect = () => {
-        if (selectedRow) {
-            onClose?.(selectedRow);
+        if (selectedRowRef.current) {
+            onClose?.(selectedRowRef.current);
         }
     };
 
@@ -104,35 +79,11 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
         }
     };
 
-    // ソート変更ハンドラ
-    const onSortColumnsChange = useCallback((sortColumns: SortColumn[]) => {
-        setSortColumns(sortColumns.slice(-1));
-        // ソート時に選択を解除する
-        setSelectedRow(null);
+    // 選択行が変更された時のコールバック
+    const handleRowSelected = useCallback((row: ShozokuData | null) => {
+        // 必要に応じて追加の処理を行う場合はここに記述
+        console.log('選択行が変更されました:', row);
     }, []);
-
-    // 行クリック時のハンドラ（行番号も含む）
-    const handleRowClick = useCallback(({ row }: { row: ShozokuData }) => {
-        setSelectedRow(row);
-    }, []);
-
-    // 行番号セルのレンダラー
-    const rowNumberCellRenderer = useCallback(({ rowIdx, row }: { rowIdx: number, row: ShozokuData }) => (
-        <div
-            style={{
-                textAlign: 'center',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                backgroundColor: row.code === selectedCode ? '#e3f2fd' : 'var(--rdg-header-background-color)'
-            }}
-            onClick={() => setSelectedRow(row)}
-        >
-            {rowIdx + 1}
-        </div>
-    ), [selectedCode]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
@@ -146,15 +97,18 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
                     rows={rows}
                     rowKeyGetter={row => row.code}
                     sortColumns={sortColumns}
-                    onSortColumnsChange={onSortColumnsChange}
+                    onSortColumnsChange={setSortColumns}
                     defaultColumnOptions={{
                         resizable: true,
                         minWidth: 100,
                     }}
                     showRowNumber={true}
                     useInternalSort={true}
-                    onRowClick={handleRowClick}
-                    rowNumberCellRenderer={rowNumberCellRenderer}
+                    rowSelectable={true}
+                    initialSelectedRow={initialSelectedRow}
+                    selectedRowRef={selectedRowRef}
+                    onRowSelected={handleRowSelected}
+                    clearSelectionOnSort={true}
                 />
             </Box>
 
@@ -166,7 +120,7 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
                     variant="contained"
                     color="primary"
                     onClick={handleSelect}
-                    disabled={!selectedRow}
+                    disabled={!selectedRowRef.current}
                 >
                     選択
                 </Button>
