@@ -470,7 +470,8 @@ function KyotsuDataGrid<R extends object>({
     selectedRowKey,
     handleRowSelect,
     rowNumberCellRenderer,
-    internalSelectedRow
+    internalSelectedRow,
+    rowKeyGetter
   ]);
 
   // ===== コンテキストメニュー処理 =====
