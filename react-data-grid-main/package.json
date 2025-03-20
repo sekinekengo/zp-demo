@@ -1,0 +1,108 @@
+{
+  "name": "react-data-grid",
+  "version": "7.0.0-beta.50",
+  "license": "MIT",
+  "description": "Feature-rich and customizable data grid React component",
+  "keywords": [
+    "react",
+    "data grid"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adazzle/react-data-grid.git"
+  },
+  "bugs": "https://github.com/adazzle/react-data-grid/issues",
+  "type": "module",
+  "exports": {
+    "./lib/styles.css": "./lib/styles.css",
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/bundle.js"
+    }
+  },
+  "browser": "./lib/bundle.js",
+  "main": "./lib/bundle.js",
+  "module": "./lib/bundle.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "start": "vite serve --clearScreen false",
+    "preview": "vite preview",
+    "build:website": "vite build",
+    "build": "rolldown -c",
+    "build:types": "tsc -p tsconfig.lib.json && api-extractor run --local --verbose",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "format": "biome format --write",
+    "check": "biome check --error-on-warnings",
+    "biome:ci": "biome ci --error-on-warnings",
+    "eslint": "eslint --max-warnings 0 --cache --cache-location .cache/eslint --cache-strategy content",
+    "eslint:fix": "node --run eslint -- --fix",
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier --write .",
+    "typecheck": "tsc --build",
+    "prepublishOnly": "npm install && node --run build && node --run build:types",
+    "postpublish": "git push --follow-tags origin HEAD"
+  },
+  "dependencies": {
+    "clsx": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.26.0",
+    "@biomejs/biome": "1.9.4",
+    "@eslint/compat": "^1.2.6",
+    "@eslint/markdown": "^6.2.2",
+    "@faker-js/faker": "^9.5.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "@linaria/core": "^6.0.0",
+    "@microsoft/api-extractor": "^7.50.0",
+    "@tanstack/react-router": "^1.114.16",
+    "@tanstack/router-plugin": "^1.114.16",
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/browser": "^3.0.6",
+    "@vitest/coverage-v8": "^3.0.6",
+    "@vitest/eslint-plugin": "^1.1.31",
+    "@wyw-in-js/rollup": "^0.5.0",
+    "@wyw-in-js/vite": "^0.5.0",
+    "browserslist": "^4.24.4",
+    "eslint": "^9.20.1",
+    "eslint-plugin-jest-dom": "^5.5.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-hooks-extra": "^1.26.2",
+    "eslint-plugin-sonarjs": "^3.0.1",
+    "eslint-plugin-testing-library": "^7.1.1",
+    "jspdf": "^3.0.0",
+    "jspdf-autotable": "^5.0.2",
+    "playwright": "^1.50.1",
+    "postcss": "^8.5.2",
+    "prettier": "3.5.3",
+    "react": "^19.0.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^19.0.0",
+    "rolldown": "^1.0.0-beta.4",
+    "typescript": "~5.8.2",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.6",
+    "vitest-browser-react": "^0.1.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0",
+    "react-dom": "^19.0"
+  }
+}
