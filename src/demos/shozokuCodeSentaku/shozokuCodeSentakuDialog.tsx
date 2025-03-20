@@ -47,7 +47,6 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
             name: '所属コード',
             minWidth: 120,
             sortable: true,
-            renderEditCell: textEditor,
         },
         {
             key: 'name',
