@@ -15,6 +15,9 @@ const Home: React.FC = () => {
         <button onClick={() => navigate("/project-management")}>
           プロジェクト管理デモへ
         </button>
+        <button onClick={() => navigate("/shozoku-code-sentaku")}>
+          所属コード選択デモへ
+        </button>
       </div>
     </div>
   );
