@@ -3,7 +3,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/home/Home";
 import { createTheme, ThemeProvider } from "@mui/material";
-import ReactDataGridAdvancedDemo from "./demos/kyotsuDdataGrid/ReactDataGridDemo";
+import ReactDataGridAdvancedDemo from "./demos/kyotsuDataGrid/ReactDataGridDemo";
 import ProjectManagementParent from "./demos/kyotsuDialog/ProjectManagementParent";
 import ShozokuCodeSentakuParent from "./demos/shozokuCodeSentaku/shozokuCodeSentakuParent";
 
