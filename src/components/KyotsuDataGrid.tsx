@@ -740,6 +740,8 @@ function KyotsuDataGrid<R extends object>({
 
   // ===== スタイル定義 =====
 
+  const cellPadding = 8;
+  const cellBorderWidth = 2;
   const gridStyles = `
     /* 行番号列のセルのスタイル（renderCellの親要素） */
     .rdg-cell {
@@ -749,6 +751,11 @@ function KyotsuDataGrid<R extends object>({
     /* 行番号列のセルを特定する別のセレクタ */
     .rdg-row > div:first-child {
       padding: 0 !important;
+    }
+
+    /* ヘッダーのスタイル */
+    .rdg-header-sort-name{
+      padding-left: ${cellPadding}px;
     }
     
     /* 行番号列のキー名を使用した特定のセレクタ */
@@ -775,8 +782,8 @@ function KyotsuDataGrid<R extends object>({
       inline-size: 100%;
       block-size: 100%;
       padding-block: 0;
-      padding-inline: 6px;
-      border: 2px solid #ccc;
+      padding-inline: ${cellPadding - cellBorderWidth}px;
+      border: ${cellBorderWidth}px solid #ccc;
       vertical-align: top;
       color: var(--rdg-color);
       background-color: var(--rdg-background-color);
