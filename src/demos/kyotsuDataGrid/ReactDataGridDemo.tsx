@@ -202,7 +202,6 @@ const ReactDataGridAdvancedDemo: React.FC = () => {
             minWidth: 80,
             resizable: true,
           }}
-          className="fill-grid"
           contextMenuOptions={{
             copyRow: true,
             pasteRow: true,

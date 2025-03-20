@@ -147,7 +147,6 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
                     rowKeyGetter={row => row.code}
                     sortColumns={sortColumns}
                     onSortColumnsChange={onSortColumnsChange}
-                    className="fill-grid"
                     defaultColumnOptions={{
                         resizable: true,
                         minWidth: 100,
