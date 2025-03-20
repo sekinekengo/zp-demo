@@ -130,25 +130,51 @@ interface WithId {
 
 // KyotsuDataGridのプロップス
 export interface KyotsuDataGridProps<R extends object> {
+  /** データグリッドの列定義配列 */
   columns: readonly Column<R>[];
+
+  /** データグリッドに表示する行データの配列 */
   rows: readonly R[];
+
+  /** 行データが変更された時に呼び出されるコールバック関数 */
   onRowsChange?: (rows: R[]) => void;
+
+  /** 各行の一意のキーを取得するための関数 */
   rowKeyGetter: (row: R) => React.Key;
+
+  /** 現在のソート状態を表す配列 */
   sortColumns?: readonly SortColumn[];
+
+  /** ソート状態が変更された時に呼び出されるコールバック関数 */
   onSortColumnsChange?: (sortColumns: SortColumn[]) => void;
+
+  /** 列の並び順が変更された時に呼び出されるコールバック関数 */
   onColumnsReorder?: (sourceKey: string, targetKey: string) => void;
+
+  /** 追加のCSSクラス名（デフォルトのkyotsu-data-gridクラスに追加で適用されます） */
   className?: string;
+
+  /** コンテキストメニューの機能設定オプション */
   contextMenuOptions?: ContextMenuOptions;
+
+  /** 新しい空の行を作成するための関数 */
   createEmptyRow?: (baseRow?: R) => R;
+
+  /** 列のデフォルト設定オプション */
   defaultColumnOptions?: {
+    /** 列の最小幅（ピクセル） */
     minWidth?: number;
+    /** 列のサイズ変更を許可するかどうか */
     resizable?: boolean;
   };
-  // 行番号表示オプション
+
+  /** 行番号を表示するかどうか */
   showRowNumber?: boolean;
-  // 内部でソートを行うかどうか
+
+  /** 内部でソートを実行するかどうか（falseの場合は外部ソートが必要） */
   useInternalSort?: boolean;
-  // その他のDataGridプロパティ
+
+  /** その他のDataGridプロパティ */
   [key: string]: unknown;
 }
 
@@ -167,7 +193,6 @@ function KyotsuDataGrid<R extends object>({
   sortColumns,
   onSortColumnsChange,
   onColumnsReorder,
-  className = "fill-grid",
   contextMenuOptions = {
     copyRow: true,
     pasteRow: true,
@@ -460,7 +485,7 @@ function KyotsuDataGrid<R extends object>({
         sortColumns={sortColumns}
         onSortColumnsChange={onSortColumnsChange}
         onColumnsReorder={onColumnsReorder}
-        className={className}
+        className={`kyotsu-data-grid`}
         onCellContextMenu={
           isContextMenuEnabled
             ? ({ row }, event) => {
@@ -564,7 +589,7 @@ function KyotsuDataGrid<R extends object>({
 
       <style>{`
         /* グリッドのスタイル */
-        .fill-grid {
+        .kyotsu-data-grid {
           block-size: 100%;
           min-height: 200px; /* 最小高さを200pxに設定 */
           flex: 1;
@@ -617,6 +642,7 @@ function KyotsuDataGrid<R extends object>({
         /* セレクトボックスのスタイル */
         select.rdg-text-editor {
           padding-inline-end: 0;
+          appearance: auto;
         }
       `}</style>
     </>
