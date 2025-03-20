@@ -198,6 +198,7 @@ const ReactDataGridAdvancedDemo: React.FC = () => {
           sortColumns={sortColumns}
           onSortColumnsChange={onSortColumnsChange}
           onColumnsReorder={onColumnsReorder}
+          resizable={true}
           contextMenuOptions={{
             copyRow: true,
             pasteRow: true,
@@ -229,6 +230,47 @@ const ReactDataGridAdvancedDemo: React.FC = () => {
           </ul>
         </div>
       </main>
+
+      <style>{`
+        /* グリッドのスタイル */
+        .fill-grid {
+          block-size: 100%;
+          min-height: 200px; /* 最小高さを200pxに設定 */
+          flex: 1;
+        }
+        
+        /* コンテキストメニューのスタイル */
+        .context-menu li:hover {
+          background-color: #f0f0f0;
+        }
+
+        /* テキストエディタのスタイル */
+        .rdg-text-editor {
+          appearance: none;
+          box-sizing: border-box;
+          inline-size: 100%;
+          block-size: 100%;
+          padding-block: 0;
+          padding-inline: 6px;
+          border: 2px solid #ccc;
+          vertical-align: top;
+          color: var(--rdg-color);
+          background-color: var(--rdg-background-color);
+          font-family: inherit;
+          font-size: var(--rdg-font-size);
+        }
+        
+        .rdg-text-editor:focus {
+          border-color: var(--rdg-selection-color);
+          outline: none;
+        }
+        
+        /* セレクトボックスのスタイル */
+        select.rdg-text-editor {
+          padding-inline-end: 0;
+          appearance: auto;
+        }
+      `}</style>
     </div>
   );
 };

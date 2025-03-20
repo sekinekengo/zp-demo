@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import KyotsuDataGrid from '../../components/KyotsuDataGrid';
 import { DialogChildProps, DialogSize } from '../../components/KyotsuDialog';
@@ -33,39 +33,35 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
     const [rows] = useState<ShozokuData[]>(generateDummyData());
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
 
-    // 選択された行への参照を保持するためのref
-    const selectedRowRef = useRef<ShozokuData | null>(null);
+    // 選択行を単一のステートで管理
+    const [selectedRow, setSelectedRow] = useState<ShozokuData | null>(
+        initialData?.selectedCode
+            ? rows.find(row => row.code === initialData.selectedCode) || null
+            : null
+    );
 
     // カラム定義
     const columns = useMemo<Column<ShozokuData>[]>(() => [
         {
             key: 'code',
             name: '所属コード',
-            width: 120,
+            minWidth: 120,
             sortable: true,
             renderEditCell: textEditor,
         },
         {
             key: 'name',
             name: '所属名',
-            width: 200,
+            minWidth: 200,
             sortable: true,
             renderEditCell: textEditor,
         }
     ], []);
 
-    // 初期選択行を設定（initialDataに基づく）
-    const initialSelectedRow = useMemo(() => {
-        if (initialData?.selectedCode) {
-            return rows.find(row => row.code === initialData.selectedCode) || null;
-        }
-        return null;
-    }, [rows, initialData]);
-
     // 選択ボタンクリック時のハンドラ
     const handleSelect = () => {
-        if (selectedRowRef.current) {
-            onClose?.(selectedRowRef.current);
+        if (selectedRow) {
+            onClose?.(selectedRow);
         }
     };
 
@@ -81,8 +77,7 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
 
     // 選択行が変更された時のコールバック
     const handleRowSelected = useCallback((row: ShozokuData | null) => {
-        // 必要に応じて追加の処理を行う場合はここに記述
-        console.log('選択行が変更されました:', row);
+        setSelectedRow(row);
     }, []);
 
     return (
@@ -98,15 +93,10 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
                     rowKeyGetter={row => row.code}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
-                    defaultColumnOptions={{
-                        resizable: true,
-                        minWidth: 100,
-                    }}
                     showRowNumber={true}
                     useInternalSort={true}
                     rowSelectable={true}
-                    initialSelectedRow={initialSelectedRow}
-                    selectedRowRef={selectedRowRef}
+                    initialSelectedRow={selectedRow}
                     onRowSelected={handleRowSelected}
                     clearSelectionOnSort={true}
                 />
@@ -120,7 +110,7 @@ const ShozokuCodeSentakuDialog: React.FC<DialogChildProps<DialogInitialData, Sho
                     variant="contained"
                     color="primary"
                     onClick={handleSelect}
-                    disabled={!selectedRowRef.current}
+                    disabled={!selectedRow}
                 >
                     選択
                 </Button>
