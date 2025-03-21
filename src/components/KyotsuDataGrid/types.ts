@@ -29,6 +29,28 @@ export interface ContextMenuOptions {
 }
 
 /**
+ * フィルター状態管理
+ */
+export interface FilterState {
+    /** フィルターが表示されているかどうか */
+    showFilters: boolean;
+    /** フィルター条件 key: 列のキー, value: フィルター値 */
+    filters: Record<string, string>;
+}
+
+/**
+ * フィルタレンダラープロップス
+ */
+export interface FilterRendererProps {
+    /** 列のキー */
+    columnKey: string;
+    /** フィルタ値 */
+    value: string;
+    /** フィルタ変更ハンドラ */
+    onChange: (value: string) => void;
+}
+
+/**
  * KyotsuDataGridのプロップス
  */
 export interface KyotsuDataGridProps<R extends object> {
@@ -63,4 +85,8 @@ export interface KyotsuDataGridProps<R extends object> {
 
     /** コンテキストメニュー */
     contextMenuOptions?: ContextMenuOptions;
+
+    /** フィルタリング機能 */
+    filterable?: boolean;
+    initialFiltersVisible?: boolean;
 } 

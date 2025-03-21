@@ -613,7 +613,7 @@ export function DataGrid<R, SR = unknown, K extends Key = Key>(props: DataGridPr
     const isRowEvent = isTreeGrid && event.target === focusSinkRef.current;
     if (!isCellEvent && !isRowEvent) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
+     
     const { keyCode } = event;
 
     if (

@@ -47,6 +47,57 @@ export const menuItemDisabledStyle: React.CSSProperties = {
 };
 
 /**
+ * フィルターセルのスタイル
+ */
+export const filterCellStyle: React.CSSProperties = {
+    padding: '0 4px',
+    width: '100%',
+    boxSizing: 'border-box',
+    marginTop: '8px'
+};
+
+/**
+ * フィルター入力のスタイル
+ */
+export const filterInputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '6px 8px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    fontSize: '12px',
+    height: '28px',
+    boxSizing: 'border-box'
+};
+
+/**
+ * フィルタートグルボタンのスタイル
+ */
+export const filterToggleButtonStyle: React.CSSProperties = {
+    border: '1px solid #ccc',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '4px',
+    padding: '6px 12px',
+    marginBottom: '10px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    transition: 'all 0.2s',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+};
+
+/**
+ * フィルタートグルボタンのアクティブ時スタイル
+ */
+export const filterToggleButtonActiveStyle: React.CSSProperties = {
+    ...filterToggleButtonStyle,
+    backgroundColor: '#e3f2fd',
+    borderColor: '#2196f3',
+    color: '#2196f3',
+    boxShadow: '0 1px 3px rgba(33,150,243,0.3)'
+};
+
+/**
  * DataGridのカスタムスタイル生成関数
  */
 export function createGridStyles(cellPadding = 8, cellBorderWidth = 2): string {

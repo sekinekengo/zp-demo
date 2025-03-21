@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { DataGrid, SortColumn } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import { KyotsuDataGridProps, ContextMenuState } from './types';
+import { KyotsuDataGridProps, ContextMenuState, FilterState } from './types';
 import { createGridStyles } from './styles';
 import ContextMenu from './ContextMenu';
 import { sortRows } from './sortUtils';
@@ -9,6 +9,8 @@ import { processColumns, createRowNumberColumn } from './columnUtils';
 import { NumberEditor } from './editors';
 import { SelectEditor } from './editors';
 import { addRowBelow, addRowToBottom, copyRow, deleteRow, pasteRow } from './rowUtils';
+import FilterToggleButton from './FilterToggleButton';
+import { filterRows, applyFiltersToColumns } from './filterUtils';
 
 /**
  * 共通データグリッドコンポーネント
@@ -52,6 +54,10 @@ function KyotsuDataGrid<R extends object>({
         addRowToBottom: true,
     },
 
+    // フィルタリング機能
+    filterable = true,
+    initialFiltersVisible = false,
+
     // その他のプロパティ
     ...rest
 }: KyotsuDataGridProps<R>) {
@@ -64,6 +70,12 @@ function KyotsuDataGrid<R extends object>({
 
     // 選択行の状態
     const [internalSelectedRow, setInternalSelectedRow] = useState<R | null>(initialSelectedRow);
+
+    // フィルタリング状態
+    const [filterState, setFilterState] = useState<FilterState>({
+        showFilters: initialFiltersVisible,
+        filters: {}
+    });
 
     // ===== 計算値 =====
 
@@ -134,15 +146,45 @@ function KyotsuDataGrid<R extends object>({
         return sortRows(rows, sortColumns);
     }, [rows, sortColumns, useInternalSort]);
 
+    // ===== フィルタリング関連の処理 =====
+
+    // フィルタトグルハンドラ
+    const handleFilterToggle = useCallback(() => {
+        setFilterState(prev => ({
+            ...prev,
+            showFilters: !prev.showFilters
+        }));
+    }, []);
+
+    // フィルタ変更ハンドラ
+    const handleFilterChange = useCallback((columnKey: string, value: string) => {
+        setFilterState(prev => ({
+            ...prev,
+            filters: {
+                ...prev.filters,
+                [columnKey]: value
+            }
+        }));
+    }, []);
+
+    // フィルタ適用後の行
+    const filteredRows = React.useMemo((): readonly R[] => {
+        const rowsToFilter = useInternalSort ? sortedRows : rows;
+        if (!filterable || Object.keys(filterState.filters).length === 0) {
+            return rowsToFilter;
+        }
+        return filterRows(rowsToFilter, filterState.filters);
+    }, [filterable, filterState.filters, useInternalSort, sortedRows, rows]);
+
     // 表示用行データ
-    const displayRows = useInternalSort ? sortedRows : rows;
+    const displayRows = filteredRows;
 
     // ===== 列処理 =====
 
-    // 列の前処理
-    const processedColumns = React.useMemo(() => {
+    // 元の列処理関数
+    const baseProcessedColumns = React.useMemo(() => {
         // 通常の列を処理
-        const finalColumns = processColumns(
+        const processedBaseColumns = processColumns(
             columns,
             resizable,
             rowSelectable,
@@ -164,11 +206,11 @@ function KyotsuDataGrid<R extends object>({
             );
 
             if (rowNumberColumn) {
-                finalColumns.unshift(rowNumberColumn);
+                return [rowNumberColumn, ...processedBaseColumns];
             }
         }
 
-        return finalColumns;
+        return processedBaseColumns;
     }, [
         columns,
         resizable,
@@ -180,6 +222,17 @@ function KyotsuDataGrid<R extends object>({
         internalSelectedRow,
         rowKeyGetter
     ]);
+
+    // フィルタを適用した最終的な列
+    const processedColumns = React.useMemo(() => {
+        if (!filterable) return baseProcessedColumns;
+
+        return applyFiltersToColumns(
+            baseProcessedColumns,
+            filterState,
+            handleFilterChange
+        );
+    }, [baseProcessedColumns, filterable, filterState, handleFilterChange]);
 
     // ===== 行操作関連の処理 =====
 
@@ -230,6 +283,7 @@ function KyotsuDataGrid<R extends object>({
         sortColumns,
         onSortColumnsChange: clearSelectionOnSort ? handleSortColumnsChange : onSortColumnsChange,
         onColumnsReorder,
+        headerRowHeight: filterState.showFilters ? 70 : undefined,
         style: {
             blockSize: '100%',
             minHeight: '200px',
@@ -286,6 +340,12 @@ function KyotsuDataGrid<R extends object>({
 
         return (
             <>
+                {filterable && (
+                    <FilterToggleButton
+                        showFilters={filterState.showFilters}
+                        onClick={handleFilterToggle}
+                    />
+                )}
                 <DataGrid {...dataGridPropsWithRowHandlers} />
                 {isContextMenuEnabled && <ContextMenu {...contextMenuProps} />}
                 <style>{createGridStyles()}</style>
@@ -296,6 +356,12 @@ function KyotsuDataGrid<R extends object>({
     // ===== 行選択機能が無効な場合のレンダリング =====
     return (
         <>
+            {filterable && (
+                <FilterToggleButton
+                    showFilters={filterState.showFilters}
+                    onClick={handleFilterToggle}
+                />
+            )}
             <DataGrid {...dataGridProps} />
             {isContextMenuEnabled && <ContextMenu {...contextMenuProps} />}
             <style>{createGridStyles()}</style>
