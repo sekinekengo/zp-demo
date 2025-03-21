@@ -73,7 +73,9 @@ export const filterInputStyle: React.CSSProperties = {
  * フィルタートグルボタンのスタイル
  */
 export const filterToggleButtonStyle: React.CSSProperties = {
-    border: '1px solid #ccc',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#ccc',
     backgroundColor: '#f5f5f5',
     borderRadius: '4px',
     padding: '6px 12px',
@@ -92,6 +94,8 @@ export const filterToggleButtonStyle: React.CSSProperties = {
 export const filterToggleButtonActiveStyle: React.CSSProperties = {
     ...filterToggleButtonStyle,
     backgroundColor: '#e3f2fd',
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: '#2196f3',
     color: '#2196f3',
     boxShadow: '0 1px 3px rgba(33,150,243,0.3)'

@@ -11,6 +11,7 @@ import { SelectEditor } from './editors';
 import { addRowBelow, addRowToBottom, copyRow, deleteRow, pasteRow } from './rowUtils';
 import FilterToggleButton from './FilterToggleButton';
 import { filterRows, applyFiltersToColumns } from './filterUtils';
+import { FILTER_ROW_NUMBER_COLUMN_KEY } from './constants';
 
 /**
  * 共通データグリッドコンポーネント
@@ -158,6 +159,11 @@ function KyotsuDataGrid<R extends object>({
 
     // フィルタ変更ハンドラ
     const handleFilterChange = useCallback((columnKey: string, value: string) => {
+        // 行番号列のフィルタは無視
+        if (columnKey === FILTER_ROW_NUMBER_COLUMN_KEY) {
+            return;
+        }
+
         setFilterState(prev => ({
             ...prev,
             filters: {

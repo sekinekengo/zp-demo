@@ -2,6 +2,7 @@
 import React from 'react';
 import { Column } from 'react-data-grid';
 import { FilterState } from './types';
+import { FILTER_ROW_NUMBER_COLUMN_KEY } from './constants';
 
 /**
  * フィルタ条件で行をフィルタリングする
@@ -19,6 +20,11 @@ export function filterRows<R extends object>(
     return rows.filter(row => {
         // 全てのフィルター条件に一致するかチェック
         return Object.entries(filters).every(([key, filterValue]) => {
+            // 行番号列は無視
+            if (key === FILTER_ROW_NUMBER_COLUMN_KEY) {
+                return true;
+            }
+
             // フィルター条件が空ならマッチとみなす
             if (!filterValue) {
                 return true;
@@ -51,6 +57,11 @@ export function applyFiltersToColumns<R extends object>(
     // 各列にフィルターヘッダーを追加
     return columns.map(column => {
         const { key } = column;
+
+        // 行番号列の場合はフィルター入力欄を表示しない
+        if (key === FILTER_ROW_NUMBER_COLUMN_KEY) {
+            return column;
+        }
 
         return {
             ...column,
