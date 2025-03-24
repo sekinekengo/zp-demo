@@ -293,7 +293,7 @@ export function TreeDataGrid<R, SR = unknown, K extends Key = Key>({
 
     if (args.mode === 'EDIT') return;
     const { column, rowIdx, selectCell } = args;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+     
     const idx = column?.idx ?? -1;
     const row = rows[rowIdx];
 
@@ -320,7 +320,7 @@ export function TreeDataGrid<R, SR = unknown, K extends Key = Key>({
     }
 
     // Prevent copy/paste on group rows
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
+     
     if (isCtrlKeyHeldDown(event) && (event.keyCode === 67 || event.keyCode === 86)) {
       event.preventGridDefault();
     }

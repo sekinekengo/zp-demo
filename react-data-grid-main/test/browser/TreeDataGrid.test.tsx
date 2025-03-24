@@ -127,7 +127,7 @@ function TestGrid({ groupBy }: { groupBy: string[] }) {
 
 function rowGrouper(rows: readonly Row[], columnKey: string) {
   // @ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+   
   return Object.groupBy(rows, (r) => r[columnKey]) as Record<string, readonly R[]>;
 }
 
