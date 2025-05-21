@@ -180,6 +180,15 @@ const KyotsuTextInputD = <T extends FieldValues>({
         }
     };
 
+    // 特定のキー入力を制限
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (type === '1' && !/^[a-zA-Z0-9ｦ-ﾟ]$/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+            e.preventDefault();
+        } else if (type === '4' && !/^[a-zA-Z0-9]$/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Controller
             name={name}
@@ -217,6 +226,7 @@ const KyotsuTextInputD = <T extends FieldValues>({
                                 const parsedValue = parseValue(newValue);
                                 field.onChange(parsedValue);
                             }}
+                            onKeyDown={handleKeyDown}
                             onBlur={field.onBlur}
                             error={!!fieldState.error}
                             inputProps={{
@@ -226,7 +236,6 @@ const KyotsuTextInputD = <T extends FieldValues>({
                                 readOnly: readonly,
                                 style: {
                                     textAlign: alignment === '0' ? 'left' : alignment === '1' ? 'right' : 'center',
-                                    imeMode: inputmode === '0' ? 'active' : 'inactive',
                                     cursor: readonly ? 'not-allowed' : 'text',
                                 }
                             }}
@@ -234,9 +243,9 @@ const KyotsuTextInputD = <T extends FieldValues>({
                             rows={isMultiLine ? row : undefined}
                             disabled={disabled}
                             InputProps={{
-                                endAdornment: unit && (
-                                    <InputAdornment position="end" sx={{ marginLeft: '0px' }}>{unit}</InputAdornment>
-                                )
+                                endAdornment: unit ? (
+                                    <InputAdornment position="end">{unit}</InputAdornment>
+                                ) : null
                             }}
                         />
                     </Stack>

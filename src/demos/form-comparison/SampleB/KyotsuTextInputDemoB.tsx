@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Paper, Button } from '@mui/material';
+import { Typography, Paper, Button, Stack } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import KyotsuTextInputB from './KyotsuTextInputB';
 
@@ -38,109 +38,117 @@ const KyotsuTextInputDemoB: React.FC = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom>
+        <Stack spacing={3} sx={{ p: 3 }}>
+            <Typography variant="h4">
                 KyotsuTextInput with React Hook Form (Controller)
             </Typography>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Paper sx={{ p: 3, mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        日本語入力デモ
-                    </Typography>
-                    <Controller
-                        name="text1"
-                        control={control}
-                        rules={{ validate: validateJapanese }}
-                        render={({ field }) => (
-                            <>
-                                <KyotsuTextInputB
-                                    label="日本語入力"
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    type="0"
-                                    maxlength={20}
-                                    format="0"
-                                    inputmode="0"
-                                />
-                                {errors.text1 && (
-                                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
-                                        {errors.text1.message}
-                                    </Typography>
+                <Stack spacing={2}>
+                    <Paper sx={{ p: 3 }}>
+                        <Stack spacing={2}>
+                            <Typography variant="h6">
+                                日本語入力デモ
+                            </Typography>
+                            <Controller
+                                name="text1"
+                                control={control}
+                                rules={{ validate: validateJapanese }}
+                                render={({ field }) => (
+                                    <Stack spacing={1}>
+                                        <KyotsuTextInputB
+                                            label="日本語入力"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            type="0"
+                                            maxlength={20}
+                                            format="0"
+                                            inputmode="0"
+                                        />
+                                        {errors.text1 && (
+                                            <Typography color="error" variant="caption">
+                                                {errors.text1.message}
+                                            </Typography>
+                                        )}
+                                    </Stack>
                                 )}
-                            </>
-                        )}
-                    />
-                </Paper>
+                            />
+                        </Stack>
+                    </Paper>
 
-                <Paper sx={{ p: 3, mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        数値入力デモ
-                    </Typography>
-                    <Controller
-                        name="number1"
-                        control={control}
-                        rules={{ validate: validateNumber }}
-                        render={({ field }) => (
-                            <>
-                                <KyotsuTextInputB
-                                    label="金額入力"
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    type="3"
-                                    maxlength={10}
-                                    moneyunit="2"
-                                    decimalplace={0}
-                                    unit="円"
-                                />
-                                {errors.number1 && (
-                                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
-                                        {errors.number1.message}
-                                    </Typography>
+                    <Paper sx={{ p: 3 }}>
+                        <Stack spacing={2}>
+                            <Typography variant="h6">
+                                数値入力デモ
+                            </Typography>
+                            <Controller
+                                name="number1"
+                                control={control}
+                                rules={{ validate: validateNumber }}
+                                render={({ field }) => (
+                                    <Stack spacing={1}>
+                                        <KyotsuTextInputB
+                                            label="金額入力"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            type="3"
+                                            maxlength={10}
+                                            moneyunit="2"
+                                            decimalplace={0}
+                                            unit="円"
+                                        />
+                                        {errors.number1 && (
+                                            <Typography color="error" variant="caption">
+                                                {errors.number1.message}
+                                            </Typography>
+                                        )}
+                                    </Stack>
                                 )}
-                            </>
-                        )}
-                    />
-                </Paper>
+                            />
+                        </Stack>
+                    </Paper>
 
-                <Paper sx={{ p: 3, mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        半角英数入力デモ
-                    </Typography>
-                    <Controller
-                        name="code1"
-                        control={control}
-                        rules={{ validate: validateAlphaNumeric }}
-                        render={({ field }) => (
-                            <>
-                                <KyotsuTextInputB
-                                    label="コード入力"
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    type="4"
-                                    maxlength={8}
-                                    format="1"
-                                />
-                                {errors.code1 && (
-                                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
-                                        {errors.code1.message}
-                                    </Typography>
+                    <Paper sx={{ p: 3 }}>
+                        <Stack spacing={2}>
+                            <Typography variant="h6">
+                                半角英数入力デモ
+                            </Typography>
+                            <Controller
+                                name="code1"
+                                control={control}
+                                rules={{ validate: validateAlphaNumeric }}
+                                render={({ field }) => (
+                                    <Stack spacing={1}>
+                                        <KyotsuTextInputB
+                                            label="コード入力"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            type="4"
+                                            maxlength={8}
+                                            format="1"
+                                        />
+                                        {errors.code1 && (
+                                            <Typography color="error" variant="caption">
+                                                {errors.code1.message}
+                                            </Typography>
+                                        )}
+                                    </Stack>
                                 )}
-                            </>
-                        )}
-                    />
-                </Paper>
+                            />
+                        </Stack>
+                    </Paper>
 
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button type="submit" variant="contained" color="primary">
-                        送信
-                    </Button>
-                    <Button type="button" variant="outlined" onClick={() => reset()}>
-                        リセット
-                    </Button>
-                </Box>
+                    <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                        <Button type="submit" variant="contained" color="primary">
+                            送信
+                        </Button>
+                        <Button type="button" variant="outlined" onClick={() => reset()}>
+                            リセット
+                        </Button>
+                    </Stack>
+                </Stack>
             </form>
-        </Box>
+        </Stack>
     );
 };
 
