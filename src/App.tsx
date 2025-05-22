@@ -6,6 +6,10 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import ReactDataGridAdvancedDemo from "./demos/kyotsuDataGrid/ReactDataGridDemo";
 import ProjectManagementParent from "./demos/kyotsuDialog/ProjectManagementParent";
 import ShozokuCodeSentakuParent from "./demos/shozokuCodeSentaku/shozokuCodeSentakuParent";
+import KyotsuTextInputDemo from "./demos/form-comparison/SampleA/KyotsuTextInputDemo";
+import KyotsuTextInputDemoB from "./demos/form-comparison/SampleB/KyotsuTextInputDemoB";
+import KyotsuTextInputDemoC from "./demos/form-comparison/SampleC/KyotsuTextInputDemoC";
+import KyotsuTextInputDemoD from "./demos/form-comparison/SampleD/KyotsuTextInputDemoD";
 
 // 高さの基準となるピクセル数（ここを自由に調整可能）
 const SMALL_COMPONENT_HEIGHT = 36; // 高さ
@@ -95,6 +99,22 @@ function App() {
         <Route
           path="/shozoku-code-sentaku"
           element={<ShozokuCodeSentakuParent />}
+        />
+        <Route
+          path="/kyotsu-text-input-demo"
+          element={<KyotsuTextInputDemo />}
+        />
+        <Route
+          path="/kyotsu-text-input-demo-b"
+          element={<KyotsuTextInputDemoB />}
+        />
+        <Route
+          path="/kyotsu-text-input-demo-c"
+          element={<KyotsuTextInputDemoC />}
+        />
+        <Route
+          path="/kyotsu-text-input-demo-d"
+          element={<KyotsuTextInputDemoD />}
         />
       </Routes>
     </ThemeProvider>

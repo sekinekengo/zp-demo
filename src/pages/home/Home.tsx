@@ -18,6 +18,18 @@ const Home: React.FC = () => {
         <button onClick={() => navigate("/shozoku-code-sentaku")}>
           所属コード選択デモへ
         </button>
+        <button onClick={() => navigate("/kyotsu-text-input-demo")}>
+          KyotsuTextInput デモへ
+        </button>
+        <button onClick={() => navigate("/kyotsu-text-input-demo-b")}>
+          KyotsuTextInput with Controller デモへ
+        </button>
+        <button onClick={() => navigate("/kyotsu-text-input-demo-c")}>
+          KyotsuTextInput with register デモへ
+        </button>
+        <button onClick={() => navigate("/kyotsu-text-input-demo-d")}>
+          KyotsuTextInput with Built-in Controller デモへ
+        </button>
       </div>
     </div>
   );

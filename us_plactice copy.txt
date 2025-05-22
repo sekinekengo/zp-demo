@@ -1,0 +1,142 @@
+# USキーボード練習ファイル
+
+## はじめに
+このファイルはJISキーボードからUSキーボードへの移行を練習するためのものです。
+USキーボードはJISキーボードと比較して、いくつかの記号の配置が異なります。
+このファイルを使って、USキーボードでの入力に慣れましょう。
+
+## 主な違い
+1. 記号の配置が異なる（@ や " など）
+2. キーの数が少ない（JISは109キー、USは101キー）
+3. 英数/かな切り替えキーがない
+4. スペースキーが長い
+5. 「￥」キーが「\」（バックスラッシュ）になる
+6. 「'」（シングルクォート）と「"」（ダブルクォート）の入力方法が異なる
+
+## 練習問題
+
+### 1. 記号入力練習
+以下の記号をUSキーボードで入力してください：
+
+1-1. @ （アットマーク）→ Shift + 2
+回答欄: @
+
+1-2. # （シャープ）→ Shift + 3
+回答欄: #
+
+1-3. $ （ドル）→ Shift + 4
+回答欄: $
+
+1-4. % （パーセント）→ Shift + 5
+回答欄: %
+
+1-5. ^ （キャレット）→ Shift + 6
+回答欄: ^
+
+1-6. & （アンパサンド）→ Shift + 7
+回答欄: &
+
+1-7. * （アスタリスク）→ Shift + 8
+回答欄: *
+
+1-8. ( ) （カッコ）→ Shift + 9, Shift + 0
+回答欄: 
+
+1-9. _ （アンダースコア）→ Shift + -
+回答欄: 
+
+1-10. + （プラス）→ Shift + =
+回答欄: 
+
+### 2. プログラミングでよく使う記号
+以下のプログラミングでよく使う記号をUSキーボードで入力してください：
+
+2-1. {} （波括弧）→ Shift + [, Shift + ]
+回答欄: {}
+
+2-2. [] （角括弧）→ [, ]
+回答欄: []
+
+2-3. \ （バックスラッシュ）→ \キー（JISの￥の位置）
+回答欄: 
+
+2-4. | （パイプ）→ Shift + \
+回答欄: 
+
+2-5. ; （セミコロン）→ ;キー
+回答欄: ;
+
+2-6. : （コロン）→ Shift + ;
+回答欄: :
+
+2-7. ' （シングルクォート）→ 'キー
+回答欄: '
+
+2-8. " （ダブルクォート）→ Shift + '
+回答欄: "
+
+2-9. , （カンマ）→ ,キー
+回答欄: ,
+
+2-10. < > （小なり、大なり）→ Shift + ,, Shift + .
+回答欄: <>
+
+### 3. 実践問題
+以下の文章をUSキーボードで入力してください：
+
+3-1. Hello, World! This is a "test" for US keyboard.
+回答欄: Hello, World! This is a "test" for US keyboard.
+
+3-2. if (x > 0 && y < 10) { return x + y; }
+回答欄: if (x > 0 && y < 10) {return x + y;}
+
+3-3. const user = { name: "John", age: 25 };
+回答欄: const user = { name : "John",age:25}
+
+3-4. function add(a, b) { return a + b; }
+回答欄: 
+
+3-5. https://www.example.com/path/to/file.html?query=123#section
+回答欄: https://www.example.com/path/to/file.html?query=123#section
+
+### 4. 上級者向け問題
+以下の複雑な構文をUSキーボードで入力してください：
+
+4-1. try { const result = await fetch(`${API_URL}/users/${id}`); } catch (error) { console.error(`Error: ${error.message}`); }
+回答欄: 
+
+4-2. const regex = /^[a-zA-Z0-9_]{3,16}$/;
+回答欄: 
+
+4-3. SELECT * FROM users WHERE username = 'john_doe' AND age > 18;
+回答欄: 
+
+4-4. git commit -m "Fix #123: Update user authentication logic"
+回答欄: 
+
+4-5. $('button').click(function() { alert('Hello, World!'); });
+回答欄: 
+
+## ヒント
+- USキーボードでは記号入力の多くがShiftキーとの組み合わせになります
+- プログラミングでは「'」と「"」の区別が重要です
+- 「@」はShift + 2、「#」はShift + 3という具合です
+- 「\」（バックスラッシュ）はJISの「￥」の位置にあります
+- 「{」と「}」はShift + [とShift + ]で入力します
+
+## チャレンジ問題
+以下のショートカットキーをUSキーボードで入力してください：
+
+- コピー: Ctrl + C
+- ペースト: Ctrl + V
+- 切り取り: Ctrl + X
+- 全選択: Ctrl + A
+- 保存: Ctrl + S
+- 元に戻す: Ctrl + Z
+- やり直し: Ctrl + Y
+- 検索: Ctrl + F
+- 置換: Ctrl + H
+- 新規作成: Ctrl + N
+
+お疲れ様でした！この練習を繰り返し行うことで、USキーボードの入力に慣れることができます。
+
