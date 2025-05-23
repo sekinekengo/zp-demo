@@ -248,6 +248,144 @@ const getValidationRules = () => {
 };
 ```
 
+## カスタムバリデーションの実装方法
+
+各パターンでのカスタムバリデーション実装の詳細は以下の通りです：
+
+### SampleA (基本実装)
+
+自前でバリデーションを実装する必要があります。典型的な実装パターンは：
+
+```tsx
+// バリデーション状態を管理するための状態
+const [error1, setError1] = useState<string | null>(null);
+
+// 値が変更されたときにバリデーションを実行
+const handleChange1 = (value: string | number) => {
+    const strValue = value.toString();
+    setValue1(strValue);
+    
+    // バリデーションロジック
+    if (!/^[一-龯ぁ-んァ-ン\s]*$/.test(strValue)) {
+        setError1('全角文字のみ入力してください');
+    } else {
+        setError1(null);
+    }
+};
+
+// エラー表示
+{error1 && <Typography color="error">{error1}</Typography>}
+```
+
+### SampleB (Controller)
+
+Controller のルールとしてバリデーション関数を定義します：
+
+```tsx
+// バリデーション関数
+const validateJapanese = (value: string) => {
+    return /^[一-龯ぁ-んァ-ン\s]*$/.test(value) || '全角文字のみ入力してください';
+};
+
+// Controller内でのバリデーション指定
+<Controller
+    name="text1"
+    control={control}
+    rules={{ 
+        required: '入力必須です',
+        validate: validateJapanese 
+    }}
+    render={({ field, fieldState }) => (
+        <Stack spacing={1}>
+            <KyotsuTextInputB
+                {...field}
+                label="日本語入力"
+                type="0"
+                maxlength={20}
+            />
+            {fieldState.error && (
+                <Typography color="error" variant="caption">
+                    {fieldState.error.message}
+                </Typography>
+            )}
+        </Stack>
+    )}
+/>
+```
+
+### SampleC (register)
+
+register の第2引数でバリデーションルールを指定します：
+
+```tsx
+// バリデーション関数
+const validateJapanese = (value: string) => {
+    return /^[一-龯ぁ-んァ-ン\s]*$/.test(value) || '全角文字のみ入力してください';
+};
+
+// 複数のバリデーションルールを組み合わせることも可能
+<KyotsuTextInputC
+    label="日本語入力"
+    type="0"
+    maxlength={20}
+    {...register('text1', {
+        required: '入力必須です',
+        maxLength: {
+            value: 20,
+            message: '20文字以内で入力してください'
+        },
+        validate: validateJapanese
+    })}
+/>
+```
+
+### SampleD (内蔵Controller)
+
+コンポーネント内部でバリデーションルールを生成し、自動的に適用します：
+
+```tsx
+// コンポーネント内部でのバリデーションルール生成
+const getValidationRules = () => {
+    // 入力タイプに応じたバリデーションルールを設定
+    const baseRules = {
+        required: required ? '入力必須です' : false
+    };
+    
+    // タイプ別のバリデーションルール
+    switch (type) {
+        case '0': // 日本語
+            return {
+                ...baseRules,
+                validate: (value: string) => {
+                    if (format === '0') {
+                        return /^[一-龯ぁ-んァ-ン\s]*$/.test(value) || '全角文字のみ入力可能です';
+                    }
+                    return true;
+                }
+            };
+        case '1': // 半角英数カナ記号
+            return {
+                ...baseRules,
+                validate: (value: string) => {
+                    return /^[a-zA-Z0-9ｦ-ﾟ\s]*$/.test(value) || '半角英数カナ記号のみ入力可能です';
+                }
+            };
+        default:
+            return baseRules;
+    }
+};
+
+// Controllerでの利用
+<Controller
+    name={name}
+    control={control}
+    rules={getValidationRules()}
+    render={({ field, fieldState }) => (
+        // フォームフィールドとエラー表示
+    )}
+/>
+```
+
 ## 文字種のバリデーション
 
 各パターンでは、入力タイプ（`type`プロパティ）に応じて適切な文字種のバリデーションを実装しています：
@@ -270,12 +408,16 @@ const getValidationRules = () => {
 | **実装の複雑さ** | シンプル | やや複雑 | やや複雑 | 最も複雑 |
 | **学習コスト** | 最も低い | 中程度 | 中程度 | 高い |
 | **React Hook Form依存** | なし | あり | あり | 強い依存 |
-| **型安全性** | 基本的 | 良好 | 良好 | 最も高い（ジェネリクス） |
+| **型安全性** * | 基本的 | 良好 | 良好 | 最も高い（ジェネリクス） |
 | **バリデーション実装** | 自前で実装 | Controller経由 | register経由 | コンポーネント内蔵 |
-| **エラーハンドリング** | 自前で実装 | Controller外で表示 | 手動表示 | コンポーネント内で自動表示 |
+| **エラーハンドリング** * | 自前で実装 | Controller外で表示 | 手動表示 | コンポーネント内で自動表示 |
 | **フォーム状態管理** | 手動（useState） | React Hook Form | React Hook Form | React Hook Form |
 | **コンポーネント再利用性** | 高い | 高い | 中程度 | 低い（React Hook Form前提） |
 | **保守・管理コスト** | 大規模フォームでは高い | 中程度 | 中程度 | 低い |
+
+*) **型安全性**: SampleDではジェネリクスを使用しているため、フォームの型定義とコンポーネントの型がコンパイル時に厳密に連携します。SampleBとSampleCでも型チェックは機能しますが、ジェネリクスによる厳密な型付けではありません。SampleAでは型の整合性を手動で確保する必要があります。
+
+*) **エラーハンドリング**: SampleAでは開発者がエラー状態とメッセージを独自に管理する必要があります。SampleBとSampleCではエラー状態はReact Hook Formによって管理されますが、表示は開発者が制御する必要があります。SampleDではエラーの検出と表示がコンポーネント内で自動的に行われるため、使用側でのコードが最も簡潔になります。
 
 ### ユースケースと適性
 
@@ -297,8 +439,8 @@ const getValidationRules = () => {
 |------|-------------------|----------------------|---------------------|--------------------------|
 | **初期値設定** | 直接指定 | formのdefaultValues | formのdefaultValues | formのdefaultValues |
 | **値の検証タイミング** | 手動実装 | フォーム送信時・変更時 | フォーム送信時・変更時 | フォーム送信時・変更時 |
-| **非制御/制御コンポーネント** | 制御コンポーネント | 制御コンポーネント | 非制御コンポーネント可能 | 制御コンポーネント |
-| **動的フォーム対応** | 手動実装が必要 | 対応可能 | 対応可能だが複雑 | 対応可能 |
+| **非制御/制御コンポーネント** * | 制御コンポーネント | 制御コンポーネント | 非制御コンポーネント可能 | 制御コンポーネント |
+| **動的フォーム対応** * | 手動実装が必要 | 対応可能 | 対応可能だが複雑 | 対応可能 |
 | **非同期バリデーション** | 手動実装が必要 | 対応可能 | 対応可能 | 対応可能 |
 | **エラーメッセージのカスタマイズ** | 完全自由 | 自由度高い | 自由度高い | コンポーネント側で制限あり |
 | **フォーカス管理** | 手動 | React Hook Form自動 | React Hook Form自動 | React Hook Form自動 |
@@ -306,7 +448,13 @@ const getValidationRules = () => {
 | **コンポーネントライブラリとの親和性** | 高い | 高い | 中程度 | やや低い |
 | **UIフレームワーク非依存性** | 高い | 高い | 中程度 | 低い |
 | **フォーム状態のリセット** | 手動実装 | reset関数 | reset関数 | reset関数 |
-| **テスト容易性** | 容易 | やや複雑 | やや複雑 | 複雑 |
+| **テスト容易性** * | 容易 | やや複雑 | やや複雑 | 複雑 |
+
+*) **非制御/制御コンポーネント**: SampleAとSampleBでは値はReactの状態によって制御されます。SampleCはregister関数を使用するため、HTML標準の非制御コンポーネントとして機能させることも可能です。SampleDは内部的にControllerを使用するため制御コンポーネントです。非制御コンポーネントはDOMに値の状態を委任するため、場合によってはパフォーマンスが向上する可能性があります。
+
+*) **動的フォーム対応**: 動的にフィールドを追加・削除するフォームの場合、SampleAでは完全に手動で状態管理を行う必要があります。SampleBとSampleDではFieldArrayコンポーネントなどを使用して比較的簡単に実装できます。SampleCでは動的フィールドのregister/unregister管理が必要となり、やや複雑になります。
+
+*) **テスト容易性**: テストの観点では、外部依存の少ないSampleAが最も単純です。React Hook Formに依存するパターンではテスト環境設定が必要になり、特にSampleDは内部実装が複雑なため、テストも複雑になりがちです。テストではモックの作成や特定の状態の再現が必要になるため、コンポーネントの複雑さに比例してテスト実装も複雑になります。
 
 ### 各パターンの長所・短所
 

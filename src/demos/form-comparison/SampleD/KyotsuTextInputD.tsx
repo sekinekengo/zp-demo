@@ -1,8 +1,9 @@
 import React from 'react';
 import { InputAdornment, TextField, Typography, Stack } from '@mui/material';
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
+import { Control, Controller, FieldValues, Path, RegisterOptions } from 'react-hook-form';
+import { getValidationRules } from "../validation-utils";
 
-interface KyotsuTextBoxProps<T extends FieldValues> {
+export interface KyotsuTextInputDProps<T extends FieldValues> {
     label: string;
     inputWidth?: string;
     labelWidth?: string;
@@ -49,6 +50,12 @@ interface KyotsuTextBoxProps<T extends FieldValues> {
     disabled?: boolean;
     name: Path<T>;
     control: Control<T>;
+    required?: boolean;
+    validator?: (value: any) => true | string;
+    placeholder?: string;
+    fullWidth?: boolean;
+    size?: "small" | "medium";
+    margin?: "none" | "dense" | "normal";
 }
 
 const KyotsuTextInputD = <T extends FieldValues>({
@@ -73,7 +80,10 @@ const KyotsuTextInputD = <T extends FieldValues>({
     disabled = false,
     name,
     control,
-}: KyotsuTextBoxProps<T>) => {
+    required,
+    validator,
+    ...props
+}: KyotsuTextInputDProps<T>) => {
     const isMultiLine = row > 1;
     const isNumber = ['2', '3'].includes(type);
 
@@ -142,42 +152,28 @@ const KyotsuTextInputD = <T extends FieldValues>({
         return val;
     }
 
-    // バリデーションルール
-    const getValidationRules = () => {
-        // 入力タイプに応じたバリデーションルールを設定
-        switch (type) {
-            case '0': // 日本語
-                return {
-                    validate: (value: string) => {
-                        if (format === '0') { // 全角のみ
-                            return /^[一-龯ぁ-んァ-ン\s]*$/.test(value) || '全角文字のみ入力可能です';
-                        }
-                        return true;
-                    }
-                };
-            case '1': // 半角英数カナ記号
-                return {
-                    validate: (value: string) => {
-                        return /^[a-zA-Z0-9ｦ-ﾟ\s]*$/.test(value) || '半角英数カナ記号のみ入力可能です';
-                    }
-                };
-            case '2': // 数字（コードなど）
-            case '3': // 数値（金額）
-                return {
-                    validate: (value: number | string) => {
-                        const numValue = typeof value === 'string' ? parseFloat(value) : value;
-                        return !isNaN(numValue) || '数値を入力してください';
-                    }
-                };
-            case '4': // 半角英数（コードなど）
-                return {
-                    validate: (value: string) => {
-                        return /^[a-zA-Z0-9\s]*$/.test(value) || '半角英数字のみ入力可能です';
-                    }
-                };
-            default:
-                return {};
+    // バリデーションルールの生成
+    const getRules = (): any => {
+        // 基本ルール
+        const baseRules: any = {
+            required: required ? "入力必須です" : false,
+            maxLength: maxlength
+                ? { value: maxlength, message: `${maxlength}文字以内で入力してください` }
+                : undefined
+        };
+
+        // タイプ別バリデーション
+        if (type) {
+            const typeRules = getValidationRules(type);
+            Object.assign(baseRules, typeRules);
         }
+
+        // カスタムバリデーター
+        if (validator) {
+            baseRules.validate = validator;
+        }
+
+        return baseRules;
     };
 
     // 特定のキー入力を制限
@@ -193,7 +189,7 @@ const KyotsuTextInputD = <T extends FieldValues>({
         <Controller
             name={name}
             control={control}
-            rules={getValidationRules()}
+            rules={getRules()}
             render={({ field, fieldState }) => (
                 <Stack direction="column" spacing={1}>
                     <Stack direction="row" spacing={1} alignItems={isMultiLine ? 'flex-start' : 'center'}>
@@ -247,6 +243,7 @@ const KyotsuTextInputD = <T extends FieldValues>({
                                     <InputAdornment position="end">{unit}</InputAdornment>
                                 ) : null
                             }}
+                            {...props}
                         />
                     </Stack>
                     {fieldState.error && (
