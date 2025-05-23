@@ -2,7 +2,13 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Box, Button, Typography, Grid, Paper } from '@mui/material';
 import KyotsuTextInputD from './KyotsuTextInputD';
-import { validateJapanese, validateEmail } from '../validation-utils';
+import {
+    validateJapanese,
+    validateAlphaNumeric,
+    validateEmail,
+    validateZipCode,
+    validatePhoneNumber
+} from '../validation-utils';
 
 // フォームの型定義
 interface FormValues {
@@ -13,7 +19,7 @@ interface FormValues {
     phoneNumber: string;
 }
 
-const KyotsuTextInputDemoD = () => {
+const KyotsuTextInputDemoD: React.FC = () => {
     const { control, handleSubmit } = useForm<FormValues>({
         defaultValues: {
             name: '',
@@ -45,7 +51,7 @@ const KyotsuTextInputDemoD = () => {
                             label="お名前（全角日本語）"
                             name="name"
                             control={control}
-                            type="0" // 日本語バリデーション
+                            validator={validateJapanese}
                             required
                         />
                     </Grid>
@@ -55,7 +61,7 @@ const KyotsuTextInputDemoD = () => {
                             label="メールアドレス"
                             name="email"
                             control={control}
-                            type="3" // メールアドレスバリデーション
+                            validator={validateEmail}
                             required
                         />
                     </Grid>
@@ -65,7 +71,7 @@ const KyotsuTextInputDemoD = () => {
                             label="コード（半角英数字）"
                             name="code"
                             control={control}
-                            type="2" // 半角英数字バリデーション
+                            validator={validateAlphaNumeric}
                             maxlength={10}
                             required
                         />
@@ -76,7 +82,7 @@ const KyotsuTextInputDemoD = () => {
                             label="郵便番号"
                             name="zipCode"
                             control={control}
-                            type="4" // 郵便番号バリデーション
+                            validator={validateZipCode}
                             placeholder="123-4567"
                             required
                         />
@@ -87,7 +93,7 @@ const KyotsuTextInputDemoD = () => {
                             label="電話番号"
                             name="phoneNumber"
                             control={control}
-                            type="5" // 電話番号バリデーション
+                            validator={validatePhoneNumber}
                             placeholder="03-1234-5678"
                             required
                         />

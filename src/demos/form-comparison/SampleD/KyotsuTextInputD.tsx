@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputAdornment, TextField, Typography, Stack } from '@mui/material';
+import { InputAdornment, TextField, Stack } from '@mui/material';
 import { Control, Controller, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { getValidationRules } from "../validation-utils";
 
@@ -191,66 +191,59 @@ const KyotsuTextInputD = <T extends FieldValues>({
             control={control}
             rules={getRules()}
             render={({ field, fieldState }) => (
-                <Stack direction="column" spacing={1}>
-                    <Stack direction="row" spacing={1} alignItems={isMultiLine ? 'flex-start' : 'center'}>
-                        {label !== "" && <Typography variant="body1" sx={{ width: labelWidth }}>{label}</Typography>}
-                        <TextField
-                            type="text"
-                            size="small"
-                            sx={{
-                                width: autoWidth,
-                                '& .MuiOutlinedInput-root': {
-                                    padding: isMultiLine ? '0px' : undefined,
-                                }
-                            }}
-                            value={formatValue(field.value)}
-                            onChange={(e) => {
-                                let newValue = e.target.value;
-                                if (type === '1') {
-                                    newValue = newValue.replace(/[^a-zA-Z0-9ｦ-ﾟ]/g, '');
-                                } else if (type === '4') {
-                                    newValue = newValue.replace(/[^a-zA-Z0-9]/g, '');
-                                } else if (type === '0' && format === '0') {
-                                    newValue = newValue.replace(/[^\u3000-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '');
-                                } else if (type === '2' || type === '3') {
-                                    newValue = newValue.replace(/[^\d.-]/g, '');
-                                }
-                                if (isMultiLine && column) {
-                                    const lines = newValue.split('\n');
-                                    newValue = lines.map(line => line.slice(0, column)).join('\n');
-                                }
-                                const parsedValue = parseValue(newValue);
-                                field.onChange(parsedValue);
-                            }}
-                            onKeyDown={handleKeyDown}
-                            onBlur={field.onBlur}
-                            error={!!fieldState.error}
-                            inputProps={{
-                                maxLength: isMultiLine ? undefined : maxlength,
-                                inputMode: type === '2' || type === '3' ? 'numeric' : 'text',
-                                pattern: type === '0' && format === '0' ? '[一-龯ぁ-んァ-ン]' : undefined,
-                                readOnly: readonly,
-                                style: {
-                                    textAlign: alignment === '0' ? 'left' : alignment === '1' ? 'right' : 'center',
-                                    cursor: readonly ? 'not-allowed' : 'text',
-                                }
-                            }}
-                            multiline={isMultiLine}
-                            rows={isMultiLine ? row : undefined}
-                            disabled={disabled}
-                            InputProps={{
-                                endAdornment: unit ? (
-                                    <InputAdornment position="end">{unit}</InputAdornment>
-                                ) : null
-                            }}
-                            {...props}
-                        />
-                    </Stack>
-                    {fieldState.error && (
-                        <Typography color="error" variant="caption">
-                            {fieldState.error.message}
-                        </Typography>
-                    )}
+                <Stack spacing={0.5}>
+                    <TextField
+                        label={label}
+                        size="small"
+                        sx={{
+                            width: autoWidth,
+                            '& .MuiOutlinedInput-root': {
+                                padding: isMultiLine ? '0px' : undefined,
+                            }
+                        }}
+                        value={formatValue(field.value)}
+                        onChange={(e) => {
+                            let newValue = e.target.value;
+                            if (type === '1') {
+                                newValue = newValue.replace(/[^a-zA-Z0-9ｦ-ﾟ]/g, '');
+                            } else if (type === '4') {
+                                newValue = newValue.replace(/[^a-zA-Z0-9]/g, '');
+                            } else if (type === '0' && format === '0') {
+                                newValue = newValue.replace(/[^\u3000-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '');
+                            } else if (type === '2' || type === '3') {
+                                newValue = newValue.replace(/[^\d.-]/g, '');
+                            }
+                            if (isMultiLine && column) {
+                                const lines = newValue.split('\n');
+                                newValue = lines.map(line => line.slice(0, column)).join('\n');
+                            }
+                            const parsedValue = parseValue(newValue);
+                            field.onChange(parsedValue);
+                        }}
+                        onKeyDown={handleKeyDown}
+                        onBlur={field.onBlur}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        inputProps={{
+                            maxLength: isMultiLine ? undefined : maxlength,
+                            inputMode: type === '2' || type === '3' ? 'numeric' : 'text',
+                            pattern: type === '0' && format === '0' ? '[一-龯ぁ-んァ-ン]' : undefined,
+                            readOnly: readonly,
+                            style: {
+                                textAlign: alignment === '0' ? 'left' : alignment === '1' ? 'right' : 'center',
+                                cursor: readonly ? 'not-allowed' : 'text',
+                            }
+                        }}
+                        multiline={isMultiLine}
+                        rows={isMultiLine ? row : undefined}
+                        disabled={disabled}
+                        InputProps={{
+                            endAdornment: unit ? (
+                                <InputAdornment position="end">{unit}</InputAdornment>
+                            ) : null
+                        }}
+                        {...props}
+                    />
                 </Stack>
             )}
         />
