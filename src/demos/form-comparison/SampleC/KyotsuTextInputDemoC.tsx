@@ -1,133 +1,129 @@
 import React from 'react';
-import { Typography, Paper, Button, Stack } from '@mui/material';
+import { Typography, Paper, Button, Stack, Box, Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import KyotsuTextInputC from './KyotsuTextInputC';
+import {
+    validateJapanese,
+    validateAlphaNumeric,
+    validateEmail,
+    validateZipCode,
+    validatePhoneNumber
+} from "../validation-utils";
 
-interface FormInputs {
-    text1: string;
-    number1: number;
-    code1: string;
+interface FormValues {
+    name: string;
+    email: string;
+    code: string;
+    zipCode: string;
+    phoneNumber: string;
 }
 
 const KyotsuTextInputDemoC: React.FC = () => {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<FormInputs>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
         defaultValues: {
-            text1: '',
-            number1: 0,
-            code1: ''
+            name: '',
+            email: '',
+            code: '',
+            zipCode: '',
+            phoneNumber: ''
         }
     });
 
-    const onSubmit = (data: FormInputs) => {
-        console.log('Form submitted:', data);
-    };
-
-    // 日本語のバリデーション（全角のみ）
-    const validateJapanese = (value: string) => {
-        return /^[一-龯ぁ-んァ-ン\s]*$/.test(value) || '全角文字のみ入力してください';
-    };
-
-    // 半角英数のバリデーション
-    const validateAlphaNumeric = (value: string) => {
-        return /^[a-zA-Z0-9]*$/.test(value) || '半角英数字のみ入力してください';
-    };
-
-    // 数値のバリデーション
-    const validateNumber = (value: number) => {
-        return !isNaN(value) || '数値を入力してください';
+    const onSubmit = (data: FormValues) => {
+        console.log('フォーム送信データ:', data);
+        alert(`フォーム送信成功:\n${JSON.stringify(data, null, 2)}`);
     };
 
     return (
-        <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant="h4">
-                KyotsuTextInput with React Hook Form (register)
+        <Paper sx={{ p: 2 }}>
+            <Typography variant="h5" gutterBottom>
+                SampleC: register + forwardRef パターン
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+                register関数とforwardRefを使用した実装です。カスタムバリデーション関数を直接渡せます。
             </Typography>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <Stack spacing={2}>
-                    <Paper sx={{ p: 3 }}>
-                        <Stack spacing={2}>
-                            <Typography variant="h6">
-                                日本語入力デモ
-                            </Typography>
-                            <Stack spacing={1}>
-                                <KyotsuTextInputC
-                                    label="日本語入力"
-                                    type="0"
-                                    maxlength={20}
-                                    format="0"
-                                    inputmode="0"
-                                    {...register('text1', { validate: validateJapanese })}
-                                />
-                                {errors.text1 && (
-                                    <Typography color="error" variant="caption">
-                                        {errors.text1.message}
-                                    </Typography>
-                                )}
-                            </Stack>
-                        </Stack>
-                    </Paper>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <KyotsuTextInputC
+                            label="お名前（全角日本語）"
+                            {...register("name", {
+                                required: "お名前は必須です",
+                                validate: validateJapanese
+                            })}
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                        />
+                    </Grid>
 
-                    <Paper sx={{ p: 3 }}>
-                        <Stack spacing={2}>
-                            <Typography variant="h6">
-                                数値入力デモ
-                            </Typography>
-                            <Stack spacing={1}>
-                                <KyotsuTextInputC
-                                    label="金額入力"
-                                    type="3"
-                                    maxlength={10}
-                                    moneyunit="2"
-                                    decimalplace={0}
-                                    unit="円"
-                                    {...register('number1', {
-                                        valueAsNumber: true,
-                                        validate: validateNumber
-                                    })}
-                                />
-                                {errors.number1 && (
-                                    <Typography color="error" variant="caption">
-                                        {errors.number1.message}
-                                    </Typography>
-                                )}
-                            </Stack>
-                        </Stack>
-                    </Paper>
+                    <Grid item xs={12}>
+                        <KyotsuTextInputC
+                            label="メールアドレス"
+                            {...register("email", {
+                                required: "メールアドレスは必須です",
+                                validate: validateEmail
+                            })}
+                            error={!!errors.email}
+                            helperText={errors.email?.message}
+                        />
+                    </Grid>
 
-                    <Paper sx={{ p: 3 }}>
-                        <Stack spacing={2}>
-                            <Typography variant="h6">
-                                半角英数入力デモ
-                            </Typography>
-                            <Stack spacing={1}>
-                                <KyotsuTextInputC
-                                    label="コード入力"
-                                    type="4"
-                                    maxlength={8}
-                                    format="1"
-                                    {...register('code1', { validate: validateAlphaNumeric })}
-                                />
-                                {errors.code1 && (
-                                    <Typography color="error" variant="caption">
-                                        {errors.code1.message}
-                                    </Typography>
-                                )}
-                            </Stack>
-                        </Stack>
-                    </Paper>
+                    <Grid item xs={12}>
+                        <KyotsuTextInputC
+                            label="コード（半角英数字）"
+                            {...register("code", {
+                                required: "コードは必須です",
+                                validate: validateAlphaNumeric,
+                                maxLength: {
+                                    value: 10,
+                                    message: "10文字以内で入力してください"
+                                }
+                            })}
+                            error={!!errors.code}
+                            helperText={errors.code?.message}
+                        />
+                    </Grid>
 
-                    <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                        <Button type="submit" variant="contained" color="primary">
+                    <Grid item xs={12} sm={6}>
+                        <KyotsuTextInputC
+                            label="郵便番号"
+                            placeholder="123-4567"
+                            {...register("zipCode", {
+                                required: "郵便番号は必須です",
+                                validate: validateZipCode
+                            })}
+                            error={!!errors.zipCode}
+                            helperText={errors.zipCode?.message}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                        <KyotsuTextInputC
+                            label="電話番号"
+                            placeholder="03-1234-5678"
+                            {...register("phoneNumber", {
+                                required: "電話番号は必須です",
+                                validate: validatePhoneNumber
+                            })}
+                            error={!!errors.phoneNumber}
+                            helperText={errors.phoneNumber?.message}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                        >
                             送信
                         </Button>
-                        <Button type="button" variant="outlined" onClick={() => reset()}>
-                            リセット
-                        </Button>
-                    </Stack>
-                </Stack>
-            </form>
-        </Stack>
+                    </Grid>
+                </Grid>
+            </Box>
+        </Paper>
     );
 };
 
