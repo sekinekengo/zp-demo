@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1748254614435" clover="3.2.0">
+  <project timestamp="1748254614435" name="All files">
+    <metrics statements="53" coveredstatements="53" conditionals="12" coveredconditionals="12" methods="22" coveredmethods="22" elements="87" coveredelements="87" complexity="0" loc="53" ncloc="53" packages="1" files="3" classes="3"/>
+    <file name="asyncUtils.ts" path="/Users/sekinekengo/Desktop/Development/react/zaimu-vite/zaimu-project/jest-samples/utils/asyncUtils.ts">
+      <metrics statements="21" coveredstatements="21" conditionals="4" coveredconditionals="4" methods="9" coveredmethods="9"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="9" count="25" type="stmt"/>
+      <line num="15" count="1" type="stmt"/>
+      <line num="16" count="14" type="stmt"/>
+      <line num="18" count="14" type="cond" truecount="1" falsecount="0"/>
+      <line num="19" count="3" type="stmt"/>
+      <line num="22" count="11" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="33" count="9" type="stmt"/>
+      <line num="34" count="4" type="stmt"/>
+      <line num="40" count="1" type="stmt"/>
+      <line num="41" count="4" type="stmt"/>
+      <line num="44" count="4" type="stmt"/>
+      <line num="52" count="1" type="stmt"/>
+      <line num="59" count="5" type="stmt"/>
+      <line num="60" count="12" type="stmt"/>
+      <line num="61" count="12" type="stmt"/>
+      <line num="63" count="9" type="stmt"/>
+      <line num="64" count="9" type="cond" truecount="1" falsecount="0"/>
+      <line num="65" count="7" type="stmt"/>
+      <line num="70" count="2" type="stmt"/>
+    </file>
+    <file name="calculator.ts" path="/Users/sekinekengo/Desktop/Development/react/zaimu-vite/zaimu-project/jest-samples/utils/calculator.ts">
+      <metrics statements="15" coveredstatements="15" conditionals="6" coveredconditionals="6" methods="6" coveredmethods="6"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="9" count="9" type="stmt"/>
+      <line num="16" count="6" type="stmt"/>
+      <line num="23" count="6" type="stmt"/>
+      <line num="31" count="8" type="cond" truecount="1" falsecount="0"/>
+      <line num="32" count="2" type="stmt"/>
+      <line num="34" count="6" type="stmt"/>
+      <line num="42" count="8" type="cond" truecount="1" falsecount="0"/>
+      <line num="43" count="2" type="stmt"/>
+      <line num="45" count="6" type="stmt"/>
+      <line num="53" count="16" type="cond" truecount="1" falsecount="0"/>
+      <line num="54" count="2" type="stmt"/>
+      <line num="56" count="14" type="cond" truecount="3" falsecount="0"/>
+      <line num="57" count="5" type="stmt"/>
+      <line num="59" count="9" type="stmt"/>
+    </file>
+    <file name="stringUtils.ts" path="/Users/sekinekengo/Desktop/Development/react/zaimu-vite/zaimu-project/jest-samples/utils/stringUtils.ts">
+      <metrics statements="17" coveredstatements="17" conditionals="2" coveredconditionals="2" methods="7" coveredmethods="7"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="9" count="22" type="stmt"/>
+      <line num="15" count="1" type="stmt"/>
+      <line num="16" count="14" type="stmt"/>
+      <line num="17" count="14" type="stmt"/>
+      <line num="23" count="1" type="stmt"/>
+      <line num="24" count="12" type="cond" truecount="1" falsecount="0"/>
+      <line num="25" count="3" type="stmt"/>
+      <line num="27" count="9" type="stmt"/>
+      <line num="33" count="1" type="stmt"/>
+      <line num="34" count="8" type="stmt"/>
+      <line num="36" count="13" type="stmt"/>
+      <line num="42" count="1" type="stmt"/>
+      <line num="43" count="9" type="stmt"/>
+      <line num="52" count="1" type="stmt"/>
+      <line num="53" count="11" type="cond" truecount="1" falsecount="0"/>
+      <line num="54" count="10" type="stmt"/>
+    </file>
+  </project>
+</coverage>
